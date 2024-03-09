@@ -41,9 +41,10 @@ const logout = () => {
                         <div class="flex">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
-                                <Link :href="route('dashboard')">
+                                <!-- <Link :href="route('dashboard')">
                                     <ApplicationMark class="block h-9 w-auto" />
-                                </Link>
+                                </Link> -->
+                                <img class="block h-9 w-auto" src="/images/logo_app.png" alt="New Logo">
                             </div>
 
                             <!-- Navigation Links -->
@@ -52,6 +53,27 @@ const logout = () => {
                                     Dashboard
                                 </NavLink>
                             </div>
+
+                            <!-- Navigation Links -->
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('epaper.index')" :active="route().current('epaper.index')">
+                                    E-Paper
+                                </NavLink>
+                            </div>
+
+                            <!-- Navigation Links -->
+                            <!-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('')" :active="route().current('')">
+                                    Notifikasi
+                                </NavLink>
+                            </div> -->
+
+                            <!-- Navigation Links -->
+                            <!-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('')" :active="route().current('')">
+                                    Parameter
+                                </NavLink>
+                            </div> -->
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">

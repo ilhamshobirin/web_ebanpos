@@ -2,23 +2,98 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EPaper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
-class EPaperController extends Controller
+class EpaperController extends Controller
 {
-    public function upload(Request $request)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $request->validate([
-            'file' => 'required|file|max:10240', // validasi file
+        $list = EPaper::paginate(10);
+        return Inertia::render('EPaper/Index', [
+            'list' => $list,
+        ]);
+        // return $list;
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return Inertia::render('EPaper/EPaper');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'release_date' => 'required|max:20',
+            'title' => 'required|max:150',
+            'desc' => 'required|max:255',
         ]);
 
-        $directory = 'uploads/' . now()->format('Y-m-d');
+        Log::info('Store E-Paper', ['validated' => $validated]);
 
-        // Simpan file ke direktori penyimpanan
-        $path = $request->file('file')->storeAs($directory, '1.pdf');
+        if ($validated) {
+            EPaper::create([
+                'release_date' => $validated['release_date'],
+                'title' => $validated['title'],
+                'description' => $validated['desc'],
+                'page_count' => 0,
+            ]);
+        }
 
-        // Lakukan sesuatu dengan path file, misalnya simpan ke basis data
+        session()->flash('flash.banner', 'E-Paper berhasil ditambahkan');
+        return redirect()->back();
+        // return Redirect::back()->with('status', 'Pesan sukses.');
+        // return redirect()->route('dashboard')
+        //         ->with('message', 'E-Paper berhasil ditambahkan.');
 
-        return "File berhasil diunggah";
+        // }
+
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $data = EPaper::find($id);
+
+        return Inertia::render('EPaper/EPaper', [
+            'data' => $data,
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
     }
 }
