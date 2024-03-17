@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EPaper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class EpaperController extends Controller
@@ -16,7 +17,7 @@ class EpaperController extends Controller
     {
         $list = EPaper::paginate(10);
         return Inertia::render('EPaper/Index', [
-            'list' => $list,
+            'list' => $list
         ]);
         // return $list;
     }
@@ -26,7 +27,11 @@ class EpaperController extends Controller
      */
     public function create()
     {
-        return Inertia::render('EPaper/EPaper');
+        $edit_mode = '0';
+
+        return Inertia::render('EPaper/Editor', [
+            'edit_mode' => $edit_mode
+        ]);
     }
 
     /**
@@ -38,11 +43,32 @@ class EpaperController extends Controller
             'release_date' => 'required|max:20',
             'title' => 'required|max:150',
             'desc' => 'required|max:255',
+            'files.*' => 'file|mimes:jpg,png|max:10240'
         ]);
 
         Log::info('Store E-Paper', ['validated' => $validated]);
 
         if ($validated) {
+            if($request->hasFile('files')){
+
+                $files = $request->file('files');
+                $directory = 'epapers/' . $validated['release_date'];
+    
+                if (Storage::exists($directory)) {
+                    Storage::deleteDirectory($directory);
+                }
+
+                $index = 1;
+    
+                foreach ($files as $file) {
+                    $extension = $file->getClientOriginalExtension();
+                    $filename = ($extension === 'jpg') ? $index . '.jpg' : $index . '.png';
+                    $file->storeAs($directory, $filename);
+    
+                    $index++;
+                }
+            }
+
             EPaper::create([
                 'release_date' => $validated['release_date'],
                 'title' => $validated['title'],
@@ -52,13 +78,8 @@ class EpaperController extends Controller
         }
 
         session()->flash('flash.banner', 'E-Paper berhasil ditambahkan');
-        return redirect()->back();
-        // return Redirect::back()->with('status', 'Pesan sukses.');
-        // return redirect()->route('dashboard')
-        //         ->with('message', 'E-Paper berhasil ditambahkan.');
-
-        // }
-
+        return redirect()->route('epaper.index');
+        // return $request;
     }
 
     /**
@@ -75,9 +96,11 @@ class EpaperController extends Controller
     public function edit(string $id)
     {
         $data = EPaper::find($id);
+        $edit_mode = '1';
 
-        return Inertia::render('EPaper/EPaper', [
+        return Inertia::render('EPaper/Editor', [
             'data' => $data,
+            'edit_mode' => $edit_mode
         ]);
     }
 

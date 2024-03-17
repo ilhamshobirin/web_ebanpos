@@ -91,7 +91,6 @@ const editData = ($data) => {
                             <th class="p-2">Tanggal Rilis</th>
                             <th class="p-2 w-50">Judul</th>
                             <th class="p-2">Deskripsi</th>
-                            <th class="p-2">Jumlah Halaman</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -115,7 +114,6 @@ const editData = ($data) => {
                             <td class="p-2 text-center w-24"> {{ data.release_date }} </td>
                             <td class="p-2 text-center w-20"> {{ data.title }} </td>
                             <td class="p-2 text-center"> {{ data.description }} </td>
-                            <td class="p-2 text-center w-16"> {{ data.page_count }} </td>
                             <td class="p-2 text-center">
                                 <span class="material-symbols-outlined">
                                     chevron_right
