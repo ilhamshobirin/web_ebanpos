@@ -19,6 +19,7 @@
         "vue": "^3.2.31"
     },
     "dependencies": {
+        "@inertiajs/inertia-vue3": "^0.6.0",
         "filepond": "^4.30.6",
         "vue-filepond": "^7.0.4"
     }

@@ -3,27 +3,25 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
+import { watch, ref } from "vue";
 import SimplePagination from '@/Components/SimplePagination.vue';
 
 const props = defineProps({
-    filters: Object,
     list: Object,
 });
 
-const form = useForm({
-    date : '',
-    title : '',
-    desc : ''
-});
+const search = ref('');
 
-const submit = () => {
-    console.log(form);
-    form.post(route("epaper.store"), {
-        onFinish: () => {
-            form.reset();
-        },
-    });
-};
+watch(
+    search, 
+    (value) => {
+        router.get(
+            route("epaper.index"),
+            {search: value},
+            {preserveState: true}
+        )
+    }
+)
 
 const newData = () => {
     router.visit(route("epaper.create"));
@@ -49,7 +47,7 @@ const editData = ($data) => {
                 <div class="w-full p-4 flex justify-between items-center">
                     <div class="w-1/2 flex items-center">
                         <div
-                            class="w-full max-w-md inline-flex items-center bg-white rounded-md border focus-within:ring-2 focus-within:indigo-500"
+                            class="w-full max-w-md inline-flex items-center bg-white rounded-md border border-black focus-within:border-transparent focus-within:ring-2 focus-within:indigo-500"
                         >
                             <InputLabel
                                 for="globalsearch"
@@ -58,16 +56,11 @@ const editData = ($data) => {
                             />
                             <TextInput
                                 type="search"
-                                v-model="form.search"
+                                v-model="search"
                                 class="w-full rounded-r-md ring-0 border-0 focus:ring-0 text-sm"
                                 name="globalsearch"
                                 id="globalsearch"
                             />
-                            <span
-                                class="material-symbols-outlined font-bold text-lg pr-2"
-                            >
-                                search
-                            </span>
                         </div>
                     </div>
                     <button
