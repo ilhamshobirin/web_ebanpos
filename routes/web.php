@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EPaperController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -36,11 +37,8 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
-    // Route::get('/epaper', function () {
-    //     return Inertia::render('Epaper/Epaper');
-    // })->name('epaper');
-
     Route::resource('epaper', EPaperController::class);
+    Route::resource('notification', NotificationController::class);
     // Route::group(['prefix' => 'epaper/', 'as' => 'epaper.'], function () {
     // });
 });

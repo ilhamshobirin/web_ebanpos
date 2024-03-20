@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -27,5 +28,17 @@ class EPaper extends Model
         'description',
         'page_count',
     ];
+
+    /**
+     * image
+     *
+     * @return Attribute
+     */
+    // protected function release_date(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn ($release_date) => url('/storage/epaper/' . $release_date),
+    //     );
+    // }
 
 }

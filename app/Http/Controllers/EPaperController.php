@@ -57,7 +57,7 @@ class EpaperController extends Controller
             if($request->hasFile('files')){
 
                 $files = $request->file('files');
-                $directory = 'epapers/' . $validated['release_date'];
+                $directory = 'public/epapers/' . $validated['release_date'];
     
                 if (Storage::exists($directory)) {
                     Storage::deleteDirectory($directory);

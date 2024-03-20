@@ -62,11 +62,11 @@ const logout = () => {
                             </div>
 
                             <!-- Navigation Links -->
-                            <!-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('')" :active="route().current('')">
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('notification.index')" :active="route().current('notification.index')">
                                     Notifikasi
                                 </NavLink>
-                            </div> -->
+                            </div>
 
                             <!-- Navigation Links -->
                             <!-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
