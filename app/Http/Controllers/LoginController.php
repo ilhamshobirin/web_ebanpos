@@ -19,7 +19,7 @@ class LoginController extends Controller
             return Redirect::route('login');
         }
 
-        return Redirect::route('dashboard.index');
+        return Redirect::route('dashboard');
 
 
 

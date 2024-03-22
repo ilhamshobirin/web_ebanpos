@@ -4,6 +4,7 @@ import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { watch, ref } from "vue";
+import moment from "moment-timezone";
 import SimplePagination from '@/Components/SimplePagination.vue';
 
 const props = defineProps({
@@ -24,11 +25,11 @@ watch(
 )
 
 const newData = () => {
-    router.visit(route("epaper.create"));
+    router.visit(route("notification.create"));
 };
 
 const editData = ($data) => {
-    router.visit(route("epaper.edit", { id: $data.id }));
+    router.visit(route("notification.edit", { id: $data.id }));
 };
 
 </script>
@@ -67,7 +68,7 @@ const editData = ($data) => {
                         class="flex gap-2 text-sm bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
                         @click="newData"
                     >
-                        Tambah
+                        Buat
                         <span class="hidden md:block"
                             >Notifikasi Baru</span
                         >
@@ -81,12 +82,12 @@ const editData = ($data) => {
                     <thead>
                         <tr>
                             <th class="p-2 w-10">No.</th>
-                            <th class="p-2">Tanggal</th>
-                            <th class="p-2 w-50">Isi Pesan</th>
-                            <th class="p-2">Deskripsi</th>
+                            <th class="p-2">Tanggal & Waktu</th>
+                            <th class="p-2 w-50">Judul Notifikasi</th>
+                            <th class="p-2">Isi Notifikasi</th>
                         </tr>
                     </thead>
-                    <!-- <tbody>
+                    <tbody>
                         <tr v-if="props.list.data.length <= 0">
                             <td
                                 colspan="7"
@@ -98,30 +99,31 @@ const editData = ($data) => {
                         <tr
                             v-for="(data, index) in props.list.data"
                             :key="data.id"
-                            @click="editData(data)"
-                            class="cursor-pointer hover:bg-gray-200 transition"
+                            class="cursor-pointer hover:bg-gray-100 transition"
                         >
                             <td class="p-2 text-center">
                                 {{ props.list.from + index }}.
                             </td>
-                            <td class="p-2 text-center w-24"> {{ data.release_date }} </td>
+                            <td class="p-2 text-center w-24"> {{ moment(data.created_at).format('DD MMM yyyy HH:mm:ss')  }} </td>
                             <td class="p-2 text-center w-20"> {{ data.title }} </td>
-                            <td class="p-2 text-center"> {{ data.description }} </td>
+                            <td class="p-2 text-center"> {{ data.body }} </td>
                             <td class="p-2 text-center">
-                                <span class="material-symbols-outlined">
-                                    chevron_right
+                                <span class="material-symbols-outlined cursor-pointer hover:bg-gray-400 transition"
+                                    @click="editData(data)"
+                                >
+                                    content_copy
                                 </span>
                             </td>
                         </tr>
-                    </tbody> -->
+                    </tbody>
                 </table>
             </div> 
             <div class="flex justify-between items-center">
-                <!-- <SimplePagination :links="props.list.links" />
+                <SimplePagination :links="props.list.links" />
                 <span class="text-sm text-gray-400 font-semibold"
                     >Menampilkan {{ props.list.from }} sampai
                     {{ props.list.to }} dari {{ props.list.total }} data</span
-                > -->
+                >
             </div>
         </div>
         

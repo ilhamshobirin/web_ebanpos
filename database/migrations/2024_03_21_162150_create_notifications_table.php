@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('e_papers', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->date('release_date');
-            $table->string('title', 150)->default('');
-            $table->string('description', 255)->default('');
-            $table->integer('page_count')->default(0);
-            $table->string('img_header', 150)->default('');
+            $table->string('title', 200)->default('');
+            $table->string('body', 255)->default('');
             $table->timestamps();
         });
     }
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('e_papers');
+        Schema::dropIfExists('notifications');
     }
 };

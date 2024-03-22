@@ -72,18 +72,40 @@ class EpaperController extends Controller
     
                     $index++;
                 }
+
+                // Save Header Image
+                $file = $files[0];
+
+                if ($file) {
+                    $header_directory = 'public/epapers/header';
+
+                    $header_extension = $file->getClientOriginalExtension();
+                    $header_filename = ($header_extension === 'jpg') ? $validated['release_date'] . '.jpg' : $validated['release_date'] . '.png';
+                    $file->storeAs($header_directory, $header_filename);
+                    
+                    EPaper::create([
+                        'release_date' => $validated['release_date'],
+                        'title' => $validated['title'],
+                        'description' => $validated['desc'],
+                        'page_count' => 0,
+                        'img_header' => $header_filename
+                    ]);
+                }
+                
+    
+                $data = [
+                    'title' => $validated['title'],
+                    'body' => $validated['desc'],
+                ];
+        
+                session()->flash('flash.banner', 'E-Paper berhasil ditambahkan. Silakan buat notifikasi untuk epaper baru');
+                return Inertia::render('Notification/Editor', [
+                    'data' => $data
+                ]);
             }
 
-            EPaper::create([
-                'release_date' => $validated['release_date'],
-                'title' => $validated['title'],
-                'description' => $validated['desc'],
-                'page_count' => 0,
-            ]);
         }
-
-        session()->flash('flash.banner', 'E-Paper berhasil ditambahkan');
-        return redirect()->route('epaper.index');
+        // return redirect()->route('epaper.index');
         // return $request;
     }
 

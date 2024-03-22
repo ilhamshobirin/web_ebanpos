@@ -27,6 +27,7 @@ class EPaper extends Model
         'title',
         'description',
         'page_count',
+        'img_header',
     ];
 
     /**
@@ -34,11 +35,11 @@ class EPaper extends Model
      *
      * @return Attribute
      */
-    // protected function release_date(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn ($release_date) => url('/storage/epaper/' . $release_date),
-    //     );
-    // }
+    protected function imgHeader(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($img_header) => url('/storage/epapers/header/' . $img_header),
+        );
+    }
 
 }
