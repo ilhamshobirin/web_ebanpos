@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AppParameter;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -33,7 +34,6 @@ class NotificationController extends Controller
      */
     public function create(Request $request)
     {
-
         return Inertia::render('Notification/Editor', [
         ]);
     }
@@ -53,7 +53,8 @@ class NotificationController extends Controller
         if ($validated) {
 
             $url = 'https://fcm.googleapis.com/fcm/send';
-            $key = 'AAAAjQ8M_VE:APA91bHKqrLDT6YcAXkZ3sCjaBQdivVMzJy4BX-HAnmySVJvkgCZHkL0sb-4-1ZLAtv5PItXsdwodesk0OJZelUXesSiHkdTXApRIZ4FtGIhMt-GaTjRXdg1hzjp00To5kSa2p4rwbxQ';
+            
+            $key = AppParameter::all()->first()->fcm_key;
 
             $data = [
                 'to' => '/topics/flutter_notification',
