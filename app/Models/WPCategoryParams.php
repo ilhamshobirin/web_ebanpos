@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AppParameter extends Model
+class WPCategoryParams extends Model
 {
     use HasFactory;
 
@@ -14,7 +14,7 @@ class AppParameter extends Model
      *
      * @var string
      */
-    protected $table = 'app_parameters';
+    protected $table = 'wp_category_params';
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +22,7 @@ class AppParameter extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'fcm_key',
-        'wp_api_url',
+        'wp_id',
+        'wp_categoryname'
     ];
 }

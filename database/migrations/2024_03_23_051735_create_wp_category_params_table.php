@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('app_parameters', function (Blueprint $table) {
+        Schema::create('wp_category_params', function (Blueprint $table) {
             $table->id();
-            $table->string('fcm_key', 250)->default('');
-            $table->string('wp_api_url', 200)->default('');
+            $table->integer('wp_id')->default(0);
+            $table->string('wp_categoryname')->default('');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('app_parameters');
+        Schema::dropIfExists('wp_category_params');
     }
 };

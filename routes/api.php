@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\EpaperController;
+use App\Http\Controllers\Api\ParameterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,3 +21,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('/epaper', EpaperController::class);
+Route::apiResource('/parameter', ParameterController::class);
