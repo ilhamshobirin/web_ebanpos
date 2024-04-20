@@ -6,9 +6,10 @@ use App\Models\EPaper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
-class EpaperController extends Controller
+class EPaperController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -87,7 +88,7 @@ class EpaperController extends Controller
                         'release_date' => $validated['release_date'],
                         'title' => $validated['title'],
                         'description' => $validated['desc'],
-                        'page_count' => 0,
+                        'page_count' => count($files),
                         'img_header' => $header_filename
                     ]);
                 }
@@ -144,6 +145,15 @@ class EpaperController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $data = EPaper::find($id);
+
+        $data->delete();
+
+        Log::info('Delete E-Paper ID' . $id);
+
+        session()->flash('flash.banner', 'E-Paper berhasil dihapus.');
+        session()->flash('flash.bannerStyle', 'success');
+
+        return Redirect::route('epaper.index');
     }
 }
