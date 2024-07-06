@@ -12,7 +12,6 @@ import DangerButton from "@/Components/DangerButton.vue";
 
 const props = defineProps({
     data: Object,
-    page_count: Object,
     edit_mode: String,
 });
 
@@ -20,11 +19,12 @@ const form = useForm({
     release_date : props?.data?.release_date ?? '',
     title : props?.data?.title ?? '',
     desc : props?.data?.description ?? '',
-    files : [],
-    page_count : props?.data?.page_count ?? 5 
+    header : props?.data?.header ?? '',
+    epaper : props?.data?.epaper ?? '',
 });
 
-const pages = ref([]);
+const uploadedHeader = ref(null);
+const uploadedEPaper = ref(null);
 
 const showDeleteConfirmation = ref(false);
 
@@ -38,46 +38,56 @@ const Delete = () => {
 
 const submit = () => {
     // console.log(form);
-    console.log("Uploaded Files");
-    console.log(uploadedFiles);
-    form.post(route("epaper.store"));
+    
+    form.post(route("epaper.store"),
+        {
+            onError: (errors) => {
+                console.log("Error");
+                console.log(errors);
+            }
+        }
+    );
 };
 
-const addPage = () => {
-    form.page_count += 1;
-}
+    const handleHeaderUpload = (event) => {
+        const files = event.target.files;
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
 
-const uploadedFiles = ref([]);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedHeader.value = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        form.header = files[0];
+    };
 
-const handleFileUpload = (event) => {
-    const files = event.target.files;
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        
+    const handleEPaperUpload = (event) => {
+      const file = event.target.files[0];
+      if (file && file.type === 'application/pdf') {
         const reader = new FileReader();
         reader.onload = (e) => {
-            uploadedFiles.value.push(e.target.result);
+            uploadedEPaper.value = {
+                name: file.name,
+                data: e.target.result,
+            };
         };
         reader.readAsDataURL(file);
-    }
-    form.files.push(files[0]);
-};
+        form.epaper = file;
+      }
+    };
 
-const imageUrl = computed(() => (index) => {
-    if (props.edit_mode === '1') {
-        const date = form.release_date;
-        if (uploadedFiles.value.length > 0) {
-            return uploadedFiles.value[0];
-        } else if (date) {
-            const year = new Date(date).getFullYear();
-            const month = String(new Date(date).getMonth() + 1).padStart(2, '0');
-            const day = String(new Date(date).getDate()).padStart(2, '0');
-            return `${window.location.origin}/storage/epapers/${date}/${index}.png`;
-        }
-    }
-    return null;
-});
+    const deleteHeader = () => {
+      if (form.header.value) {
+        form.header.value = ''; // Clear the file selection
+      }
+      uploadedHeader.value = null; // Clear the uploaded image preview
+    };
 
+function openPdf(url) {
+    window.open(url, '_blank');
+}
 </script>
 
 <template>
@@ -123,71 +133,103 @@ const imageUrl = computed(() => (index) => {
 
         </div>
 
-        <!-- HALAMAN -->
-        <div class="whitespace-nowrap gap-4 mb-2 flex overflow-x-auto">
-            <div
-                v-for="index in form.page_count"
-                :key="index"
-            >
-                <div v-if="props.edit_mode === '1'">
-                    <!-- Preview File -->
-                    <div class="sm:max-w-lg w-full mx-5 my-5 p-5 bg-white rounded-xl">
-                        <div class="text-center">
-                            <h2 class="my-2 text-3xl font-bold text-gray-900">
-                                Halaman {{ index }}
-                            </h2>
-                        </div>
-                    
-                        <img :src="imageUrl(index)" class="flex flex-col items-center justify-center w-48 h-96 pb border-2" />
+        <div class="whitespace-nowrap items-center gap-4 grid-cols-2 mb-2 w-full-1/2 flex overflow-x-auto">
+            <!-- HEADER -->
+            <div v-if="props.edit_mode === '1'">
+                <!-- Preview File -->
+                <div class="sm:max-w-lg w-full mx-5 my-5 p-5 bg-white rounded-xl">
+                    <div class="text-center">
+                        <h2 class="my-2 text-3xl font-bold text-gray-900">
+                            Header
+                        </h2>
                     </div>
-                   
-                </div>
-                <div v-else-if="uploadedFiles.length < index">
-                        <div class="sm:max-w-lg w-full mx-5 my-5 p-5 bg-white rounded-xl">
-                            <div class="text-center">
-                                <h2 class="my-2 text-3xl font-bold text-gray-900">
-                                    Halaman {{ index }}
-                                </h2>
-                            </div>
-                            <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-96 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                <div class="flex flex-col items-center justify-center px-6">
-                                    <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                                    </svg>
-                                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Klik untuk upload</span> atau drag and drop</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">*pastikan file format .pdf dan hanya 1 halaman</p>
-                                </div>
-                                <input type="file" name="file" id="dropzone-file" multiple @change="handleFileUpload" class="hidden" />
-                            </label>
-                        </div>
-                </div>
-                <div v-else>
-                    <!-- Preview File -->
-                    <div class="sm:max-w-lg w-full mx-5 my-5 p-5 bg-white rounded-xl">
-                        <div class="text-center">
-                            <h2 class="my-2 text-3xl font-bold text-gray-900">
-                                Halaman {{ index }}
-                            </h2>
-                        </div>
-                    
-                        <img :src="uploadedFiles[index-1]" class="flex flex-col items-center justify-center w-48 h-96 pb border-2" />
-                    </div>
-                </div>
                 
+                    <img :src="props.data.header_path" class="flex flex-col items-center justify-center w-48 h-96 pb border-2" />
+                </div>
             </div>
+            <div v-else-if="uploadedHeader">
+                <div class="sm:max-w-lg w-full mx-5 my-5 p-5 bg-white rounded-xl">
+                    <div class="text-center">
+                        <h2 class="my-2 text-3xl font-bold text-gray-900">
+                            Header
+                        </h2>
+                    </div>
+                    
+                    <img :src="uploadedHeader" class="flex flex-col items-center justify-center w-48 h-96 pb border-2" />
+                    <button @click="deleteHeader" class="m-4 p-2 w-full flex flex-col items-center justify-center bg-red-500 rounded-full tracking-wide
+                                font-semibold focus:outline-none focus:shadow-outline hover:bg-red-600 shadow-lg cursor-pointer transition ease-in duration-300">
+                        <span class="material-symbols-outlined" style="color: white;"> delete </span>
+                    </button>
+                </div>
+            </div>
+            <div v-else>
+                <div class="sm:max-w-lg w-full mx-5 my-5 p-5 bg-white rounded-xl">
+                    <div class="text-center">
+                        <h2 class="my-2 text-3xl font-bold text-gray-900">
+                            Header
+                        </h2>
+                    </div>
+                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-96 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                        <div class="flex flex-col items-center justify-center px-6">
+                            <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                            </svg>
+                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400 font-semibold">Klik untuk upload gambar header dari E-Paper</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">*pastikan file format .jpg atau .png</p>
+                        </div>
+                        <input type="file" name="file" id="dropzone-file" multiple @change="handleHeaderUpload" class="hidden" />
+                    </label>
+                    <InputError :message="form.header.epaper" class="mt-1" />
+                </div>
+            </div>
+            <!-- EPAPER -->
+            <div class="sm:w-1/2 w-full col-span-1 mx-5 my-5 p-5 bg-white rounded-xl">
+                <div v-if="props.edit_mode === '1'">
+                    <div class="text-center">
+                        <h2 class="my-2 text-3xl font-bold text-gray-900">
+                            E-Paper 
+                        </h2>
+                    </div>
+                    <label class="flex flex-col items-center justify-center w-full h-96 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                        <svg @click="openPdf(props.data.epaper_path)" class="text-gray-200 hover:bg-gray-100 dark:text-gray-500 items-center" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="100" height="100">
+                            <path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/>
+                        </svg>
+                        <p class="text-lg text-center font-medium">{{ props.data.epaper_path }}</p>
+                        
+                    </label>
+                    <InputError :message="form.errors.epaper" class="mt-1" />
+                </div>
 
-            <!-- Add Button -->
-            <div v-if="props.edit_mode === '0'" class="sm:max-w-lg w-full m-5 p-10 rounded-xl z-10 flex items-center justify-center flex-col">
-                <button type="button" class="text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:outline-none font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center"
-                    @click="addPage()"
-                >
-                    <span class="material-symbols-outlined"> add_circle </span>
-                </button>
-                <h2 class="text-xl font-semibold text-blue-600">
-                    Tambah Halaman
-                </h2>
+                <div v-else>
+                    <div class="text-center">
+                        <h2 class="my-2 text-3xl font-bold text-gray-900">
+                            E-Paper 
+                        </h2>
+                    </div>
+    
+                    <label class="flex flex-col items-center justify-center w-full h-96 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                        <div v-if="!uploadedEPaper" class="flex flex-col items-center justify-center px-6">
+                            <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                            </svg>
+                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400 font-semibold">Klik untuk upload file header dari E-Paper</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">*pastikan file format .pdf</p>
+                        </div>  
+                        <input type="file" @change="handleEPaperUpload" class="m-2 p-2 border-2 border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 hidden" />
+                        <div v-if="uploadedEPaper" class="flex flex-col items-center justify-center px-6 mt-4">
+                            <svg class="w-10 h-10 text-gray-200 dark:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                                <path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/>
+                            </svg>
+                            <p class="text-lg text-center font-medium">File Terpilih:</p>
+                            <span class="text-sm font-normal ">{{ uploadedEPaper.name }}</span>
+                        </div>
+                        
+                    </label>
+                    <InputError :message="form.errors.epaper" class="mt-1" />
+
+                </div>
             </div>
-                           
+        
         </div>
 
         <!-- component -->

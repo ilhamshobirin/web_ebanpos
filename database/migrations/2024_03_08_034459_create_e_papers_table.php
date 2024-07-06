@@ -16,8 +16,8 @@ return new class extends Migration
             $table->date('release_date');
             $table->string('title', 150)->default('');
             $table->string('description', 255)->default('');
-            $table->integer('page_count')->default(0);
-            $table->string('img_header', 150)->default('');
+            $table->string('header_path', 150)->default('');
+            $table->string('epaper_path', 150)->default('');
             $table->timestamps();
         });
     }

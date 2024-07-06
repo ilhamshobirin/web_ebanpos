@@ -27,7 +27,8 @@ class EPaper extends Model
         'title',
         'description',
         'page_count',
-        'img_header',
+        'header_path',
+        'epaper_path',
     ];
 
     /**
@@ -35,10 +36,17 @@ class EPaper extends Model
      *
      * @return Attribute
      */
-    protected function imgHeader(): Attribute
+    protected function headerPath(): Attribute
     {
         return Attribute::make(
-            get: fn ($img_header) => url('/storage/epapers/header/' . $img_header),
+            get: fn ($header_path) => url('/storage/epapers/' . $header_path),
+        );
+    }
+
+    protected function epaperPath(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($epaper_path) => url('/storage/epapers/' . $epaper_path),
         );
     }
 

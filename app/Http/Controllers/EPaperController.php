@@ -49,65 +49,57 @@ class EPaperController extends Controller
             'release_date' => 'required|max:20',
             'title' => 'required|max:150',
             'desc' => 'required|max:255',
-            'files.*' => 'file|mimes:jpg,png|max:10240'
+            'header' => 'file|mimes:jpg,png|max:10240',
+            'epaper' => 'file|mimes:pdf',
         ]);
 
         Log::info('Store E-Paper', ['validated' => $validated]);
 
         if ($validated) {
-            if($request->hasFile('files')){
+            //HEADER
+            $header_directory = 'public/epapers';
+          	$header_prefix = 'header_';
 
-                $files = $request->file('files');
-                $directory = 'public/epapers/' . $validated['release_date'];
-    
-                if (Storage::exists($directory)) {
-                    Storage::deleteDirectory($directory);
-                }
+            //if (Storage::exists($header_directory)) {
+            //    Storage::deleteDirectory($header_directory);
+            //}
 
-                $index = 1;
-    
-                foreach ($files as $file) {
-                    $extension = $file->getClientOriginalExtension();
-                    $filename = ($extension === 'jpg') ? $index . '.jpg' : $index . '.png';
-                    $file->storeAs($directory, $filename);
-    
-                    $index++;
-                }
+            $header_file = $request->file('header');
+            $header_extension = $header_file->getClientOriginalExtension();
+            $header_filename = ($header_extension === 'jpg') ? $header_prefix.$validated['release_date'] . '.jpg' : $header_prefix.$validated['release_date'] . '.png';
+            $header_file->storeAs($header_directory, $header_filename);
 
-                // Save Header Image
-                $file = $files[0];
+            // EPAPER
+            $epaper_directory = 'public/epapers';
+            $epaper_prefix = 'epaper_';
 
-                if ($file) {
-                    $header_directory = 'public/epapers/header';
+            //if (Storage::exists($epaper_directory)) {
+            //    Storage::deleteDirectory($epaper_directory);
+            //}
 
-                    $header_extension = $file->getClientOriginalExtension();
-                    $header_filename = ($header_extension === 'jpg') ? $validated['release_date'] . '.jpg' : $validated['release_date'] . '.png';
-                    $file->storeAs($header_directory, $header_filename);
-                    
-                    EPaper::create([
-                        'release_date' => $validated['release_date'],
-                        'title' => $validated['title'],
-                        'description' => $validated['desc'],
-                        'page_count' => count($files),
-                        'img_header' => $header_filename
-                    ]);
-                }
+            $epaper_file = $request->file('epaper');
+            $epaper_filename = $epaper_prefix.$validated['release_date'] . '.pdf';
+            $epaper_file->storeAs($epaper_directory, $epaper_filename);
+
+            EPaper::create([
+                'release_date' => $validated['release_date'],
+                'title' => $validated['title'],
+                'description' => $validated['desc'],
+                'header_path' => $header_filename,
+                'epaper_path' => $epaper_filename
+            ]);
                 
-    
-                $data = [
-                    'title' => $validated['title'],
-                    'body' => $validated['desc'],
-                ];
+            $data = [
+                'title' => $validated['title'],
+                'body' => $validated['desc'],
+            ];
         
-                session()->flash('flash.banner', 'E-Paper berhasil ditambahkan. Silakan buat notifikasi untuk epaper baru');
-                return Inertia::render('Notification/Editor', [
-                    'data' => $data
-                ]);
-            }
+            session()->flash('flash.banner', 'E-Paper berhasil ditambahkan. Silakan buat notifikasi untuk epaper baru');
+            return Inertia::render('Notification/Editor', [
+                'data' => $data
+            ]);
 
         }
-        // return redirect()->route('epaper.index');
-        // return $request;
     }
 
     /**
