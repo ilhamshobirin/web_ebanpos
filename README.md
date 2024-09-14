@@ -30,5 +30,5 @@ rm -r folder_yang_ingin_dihapus
 
 ## Membuat storage link pada cpanel
 ln -s folder_yang_dituju folder_alias 
-e.g. ln -s web_ebanpos/public/storage storage
 e.g. ln -s web_ebanpos/storage/app/public storage
+<!-- e.g. ln -s web_ebanpos/public/storage storage -->

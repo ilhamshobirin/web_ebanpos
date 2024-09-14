@@ -17,7 +17,7 @@ class EpaperController extends Controller
     public function index()
     {
         //get all posts
-        $epapers = EPaper::latest()->paginate(5);
+        $epapers = EPaper::latest()->paginate(24);
 
         //return collection of posts as a resource
         return new ApiResource(true, 'List Data E-Paper', $epapers);

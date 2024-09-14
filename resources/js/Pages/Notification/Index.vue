@@ -17,7 +17,7 @@ watch(
     search, 
     (value) => {
         router.get(
-            route("epaper.index"),
+            route("notification.index"),
             {search: value},
             {preserveState: true}
         )
@@ -106,7 +106,7 @@ const editData = ($data) => {
                             </td>
                             <td class="p-2 text-center w-24"> {{ moment(data.created_at).format('DD MMM yyyy HH:mm:ss')  }} </td>
                             <td class="p-2 text-center w-20"> {{ data.title }} </td>
-                            <td class="p-2 text-center"> {{ data.body }} </td>
+                            <td class="p-2 text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px;"> {{ data.body }} </td>
                             <td class="p-2 text-center">
                                 <span class="material-symbols-outlined cursor-pointer hover:bg-gray-400 transition"
                                     @click="editData(data)"

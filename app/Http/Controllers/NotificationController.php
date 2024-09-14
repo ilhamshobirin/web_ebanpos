@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Exception\MessagingException;
+use Kreait\Firebase\Exception\FirebaseException;
 
 
 class NotificationController extends Controller
@@ -52,38 +55,37 @@ class NotificationController extends Controller
 
         if ($validated) {
 
-            $url = 'https://fcm.googleapis.com/fcm/send';
-            
-            $key = AppParameter::all()->first()->fcm_key;
-
-            $data = [
-                'to' => '/topics/flutter_notification',
+            $message = CloudMessage::fromArray([
                 'notification' => [
                     'title' => $validated['title'],
                     'body' => $validated['body'],
                 ],
-            ];
+                'topic' => 'flutter_notification',
+            ]);
+    
+            $firebaseMessaging = app('firebase.messaging');
+            
+            try {
+                $response = $firebaseMessaging->send($message);
 
-            $headers = [
-                'Authorization' => 'key=' . $key,
-                'Content-Type' => 'application/json', 
-            ];
+                // dd($response);
 
-            $response = Http::withHeaders($headers)
-                            ->withoutVerifying()
-                            ->post($url, $data);
-
-            if ($response->status() === 200) {
                 Notification::create([
                     'title' => $validated['title'],
                     'body' => $validated['body'],
                 ]);
-                
+
                 session()->flash('flash.banner', 'Notifikasi Berhasil terkirim');
                 return redirect()->route('notification.index');
-            } else {
+                
+            } catch (MessagingException $e) {
+                // Jika pengiriman gagal karena masalah dengan Firebase
                 session()->flash('flash.bannerStyle', 'danger'); 
-                session()->flash('flash.banner', 'Notifikasi gagal terkirim: '. $response->status()); 
+                session()->flash('flash.banner', 'Notifikasi gagal terkirim: '. $e->getMessage());
+            } catch (FirebaseException $e) {
+                // Jika terjadi kesalahan umum dengan Firebase
+                session()->flash('flash.bannerStyle', 'danger'); 
+                session()->flash('flash.banner', 'Notifikasi gagal terkirim: '. $e->getMessage());
             }
             
         }
