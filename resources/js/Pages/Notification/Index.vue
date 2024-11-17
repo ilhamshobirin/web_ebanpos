@@ -6,6 +6,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { watch, ref } from "vue";
 import moment from "moment-timezone";
 import SimplePagination from '@/Components/SimplePagination.vue';
+import Tooltip from "@/Components/Tooltip.vue";
 
 const props = defineProps({
     list: Object,
@@ -101,20 +102,32 @@ const editData = ($data) => {
                             :key="data.id"
                             class="cursor-pointer hover:bg-gray-100 transition"
                         >
+                        
                             <td class="p-2 text-center">
                                 {{ props.list.from + index }}.
                             </td>
                             <td class="p-2 text-center w-24"> {{ moment(data.created_at).format('DD MMM yyyy HH:mm:ss')  }} </td>
-                            <td class="p-2 text-center w-20"> {{ data.title }} </td>
-                            <td class="p-2 text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px;"> {{ data.body }} </td>
+                            <td class="p-2 text-center w-20" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px;"> {{ data.title }} </td>
+                            <td>
+                                <Tooltip :content="data.body">
+                                <p class="p-2 text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 700px;">
+
+                                    {{ data.body }} 
+                                </p>        
+                                </Tooltip>
+                            </td>
                             <td class="p-2 text-center">
+                                <Tooltip content="Duplikat Notifikasi lalu kirim ulang">
+
                                 <span class="material-symbols-outlined cursor-pointer hover:bg-gray-400 transition"
                                     @click="editData(data)"
                                 >
                                     content_copy
                                 </span>
+                                </Tooltip>
                             </td>
                         </tr>
+
                     </tbody>
                 </table>
             </div> 

@@ -5,6 +5,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { watch, ref } from "vue";
 import SimplePagination from '@/Components/SimplePagination.vue';
+import Tooltip from "@/Components/Tooltip.vue";
 
 const props = defineProps({
     list: Object,
@@ -105,8 +106,15 @@ const editData = ($data) => {
                                 {{ props.list.from + index }}.
                             </td>
                             <td class="p-2 text-center w-24"> {{ data.release_date }} </td>
-                            <td class="p-2 text-center w-20"> {{ data.title }} </td>
-                            <td class="p-2 text-center"> {{ data.description }} </td>
+                            <td class="p-2 text-center w-20" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px;"> {{ data.title }} </td>
+                            <td>
+                                <Tooltip :content="data.description">
+                                <p class="p-2 text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 800px;">
+
+                                    {{ data.description }} 
+                                </p>        
+                                </Tooltip>
+                            </td>
                             <td class="p-2 text-center">
                                 <span class="material-symbols-outlined">
                                     chevron_right
